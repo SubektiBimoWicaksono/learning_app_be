@@ -33,6 +33,7 @@ class CourseController extends Controller
         'lifetime_access'   => 'nullable|boolean',
         'certificate'       => 'nullable|boolean',
         'image'             => 'nullable|string',
+        'category_id'       => 'nullable|exists:categories,id'
     ]);
 
     // Tambah course dengan user_id dari session login
@@ -46,6 +47,7 @@ class CourseController extends Controller
         'lifetime_access'   => $request->lifetime_access,
         'certificate'       => $request->certificate,
         'image'             => $request->image,
+        'category_id'       => $request->category_id,
     ]);
 
     return response()->json([
@@ -97,4 +99,65 @@ class CourseController extends Controller
 
         return response()->json(['message' => 'Course berhasil dihapus']);
     }
+
+    // Filter course berdasarkan category_id
+        public function filterByCategory($id)
+    {
+        $courses = Course::with(['user', 'category'])
+            ->where('category_id', $id)
+            ->get();
+
+        if ($courses->isEmpty()) {
+            return response()->json(['message' => 'Course tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Daftar course berdasarkan kategori',
+            'data' => $courses
+        ]);
+    }
+
+    // Filter course berdasarkan user_id
+    public function filterByUser($id)
+    {
+        $courses = Course::with(['user', 'category'])
+            ->where('user_id', $id)
+            ->get();
+
+        if ($courses->isEmpty()) {
+            return response()->json(['message' => 'Course tidak ditemukan untuk user ini'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Daftar course berdasarkan user',
+            'data' => $courses
+        ]);
+    }
+
+    // Cari course berdasarkan keyword di kolom 'name'
+    public function search(Request $request)
+    {
+        $keyword = $request->query('keyword');
+
+        if (!$keyword) {
+            return response()->json(['message' => 'Keyword pencarian tidak boleh kosong'], 400);
+        }
+
+        $courses = Course::with(['user', 'category'])
+            ->where('name', 'like', '%' . $keyword . '%')
+            ->get();
+
+        if ($courses->isEmpty()) {
+            return response()->json(['message' => 'Course tidak ditemukan dengan keyword tersebut'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Hasil pencarian course',
+            'data' => $courses
+        ]);
+    }
+
+
+    
+
 }

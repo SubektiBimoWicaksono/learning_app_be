@@ -61,4 +61,11 @@ class ReviewController extends Controller
 
         return response()->json(['message' => 'Review berhasil dihapus']);
     }
+
+    public function filterByCourse($courseId)
+    {
+        $reviews = Review::where('course_id', $courseId)->with('course')->get();
+        return response()->json($reviews);
+    }
+
 }

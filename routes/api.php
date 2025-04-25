@@ -30,11 +30,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/test', function () {
-    return response([
-        'message' => 'Api is working'
-    ], 200);
-});
+
+//fitur search course 
+Route::get('/courses/search', [CourseController::class, 'search']);
+
 
 //Routes Login Register 3 Role
 Route::post('/register', [AuthenticationController::class, 'register']);
@@ -56,6 +55,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/courses/{id}', [CourseController::class, 'show']);
     Route::put('/courses/{id}', [CourseController::class, 'update']);
     Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
+    Route::get('/courses/{id}/reviews', [ReviewController::class, 'filterByCourse']);
+    Route::get('/categories/{id}/courses', [CourseController::class, 'filterByCategory']);
+    Route::get('/categories/{id}/users', [CourseController::class, 'filterByUser']);
+   
+
 
     Route::get('/course-accesses', [CourseAccessController::class, 'index']);
     Route::post('/course-accesses', [CourseAccessController::class, 'store']);
@@ -109,3 +113,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // tambah route lain yang butuh login di sini
     // contoh: Route::get('/profile', fn (Request $request) => $request->user());
 });
+
