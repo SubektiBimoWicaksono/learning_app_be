@@ -44,16 +44,13 @@ class AuthenticationController extends Controller
     {
         // Validasi input
         $validator = Validator::make($request->all(), [
-            'name'     => 'required|string|max:255',
-            'dob'      => 'required|date',
+            'name'    => 'required|',
+            'role'    => 'required|',
             'email'    => 'required|email|unique:users,email',
-            'no_telp'  => 'required|string|max:15',
-            'gender'   => 'required|in:male,female',
-            'role'     => 'required|string',
+
+
             'password' => 'required|string|min:6',
-            'pin'      => 'nullable|string|max:6',
-            'photo'    => 'nullable|string',
-            'skill'    => 'nullable|string',
+    
         ]);
 
         if ($validator->fails()) {
@@ -66,16 +63,13 @@ class AuthenticationController extends Controller
 
         // Simpan user
         $user = User::create([
-            'name'     => $request->name,
-            'dob'      => $request->dob,
+    
+            'name'    => $request->name,
             'email'    => $request->email,
-            'no_telp'  => $request->no_telp,
-            'gender'   => $request->gender,
-            'role'     => $request->role,
+            'role'    => $request->role,
+        
             'password' => Hash::make($request->password),
-            'pin'      => $request->pin,
-            'photo'    => $request->photo,
-            'skill'    => $request->skill,
+
         ]);
 
         // Buat token untuk user
