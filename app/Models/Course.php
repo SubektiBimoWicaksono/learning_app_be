@@ -14,6 +14,7 @@ class Course extends Model
         'name',
         'desc',
         'user_id',
+        'category_id',
         'media_full_access',
         'level',
         'audio_book',
@@ -27,4 +28,10 @@ class Course extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+        public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
 }
