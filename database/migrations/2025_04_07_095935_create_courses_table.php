@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('audio_book')->default(false);
             $table->boolean('lifetime_access')->default(false);
             $table->boolean('certificate')->default(false);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
         ;
