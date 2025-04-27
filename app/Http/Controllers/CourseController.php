@@ -33,6 +33,7 @@ class CourseController extends Controller
         'lifetime_access'   => 'nullable|boolean',
         'certificate'       => 'nullable|boolean',
         'image'             => 'nullable|string',
+        'price'             => 'nullable|string',
         'category_id'       => 'nullable|exists:categories,id'
     ]);
 
@@ -47,6 +48,7 @@ class CourseController extends Controller
         'lifetime_access'   => $request->lifetime_access,
         'certificate'       => $request->certificate,
         'image'             => $request->image,
+        'price'             => $request->price,
         'category_id'       => $request->category_id,
     ]);
 

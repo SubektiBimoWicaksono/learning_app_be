@@ -21,6 +21,7 @@ class Course extends Model
         'lifetime_access',
         'certificate',
         'image',
+        'price',
     ];
 
     // Menentukan relasi dengan model User
