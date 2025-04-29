@@ -11,7 +11,7 @@ class SectionController extends Controller
     public function index(Request $request)
     {
         $sections = Section::with('course', 'videos', 'quiz');
-
+ 
         if ($request->has('course_id')) {
             $sections->where('course_id', $request->course_id);
         }
@@ -19,30 +19,32 @@ class SectionController extends Controller
         return response()->json($sections->get());
     }
 
-    // POST - Create section
-    public function store(Request $request)
+
+    public function store(Request $request, $course)
     {
-
         $user = auth()->user();
-
+    
         // Cek apakah role-nya mentor
         if ($user->role !== 'mentor') {
             return response()->json(['message' => 'Hanya user dengan role mentor yang bisa membuat Section'], 403);
         }
-
+    
+        // Validasi data
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'course_id' => 'required|exists:courses,id',
+            'name' => 'required|string|max:255',
         ]);
-
-        $section = Section::create($request->only('name', 'course_id'));
-
+    
+        // Pastikan course_id sesuai dengan parameter di URL
+        $section = Section::create([
+            'name' => $request->name,
+            'course_id' => $course,
+        ]);
+    
         return response()->json([
             'message' => 'Section berhasil dibuat',
-            'data' => $section
+            'data' => $section,
         ], 201);
     }
-
     // GET - Show section by ID
     public function show($id)
     {

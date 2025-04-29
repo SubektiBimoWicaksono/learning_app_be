@@ -10,7 +10,7 @@ class CourseController extends Controller
     // Tampilkan semua course
     public function index()
     {
-        return response()->json(Course::with('user')->get());
+        return response()->json(Course::with(['user', 'category'])->get());
     }
 
     // Tambah course baru
@@ -32,7 +32,6 @@ class CourseController extends Controller
         'audio_book'        => 'nullable|boolean',
         'lifetime_access'   => 'nullable|boolean',
         'certificate'       => 'nullable|boolean',
-        'image'             => 'nullable|string',
         'price'             => 'nullable|string',
         'category_id'       => 'nullable|exists:categories,id'
     ]);
@@ -47,7 +46,6 @@ class CourseController extends Controller
         'audio_book'        => $request->audio_book,
         'lifetime_access'   => $request->lifetime_access,
         'certificate'       => $request->certificate,
-        'image'             => $request->image,
         'price'             => $request->price,
         'category_id'       => $request->category_id,
     ]);
@@ -159,6 +157,37 @@ class CourseController extends Controller
         ]);
     }
 
+// Upload gambar untuk course
+public function uploadImage(Request $request, $id)
+{
+    $course = Course::find($id);
+
+    if (!$course) {
+        return response()->json(['message' => 'Course tidak ditemukan'], 404);
+    }
+
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // maksimal 2MB
+    ]);
+
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads/courses'), $imageName);
+
+        // update course image path
+        $course->update([
+            'image' => 'uploads/courses/' . $imageName
+        ]);
+
+        return response()->json([
+            'message' => 'Gambar berhasil diupload dan course diperbarui',
+            'data' => $course
+        ]);
+    }
+
+    return response()->json(['message' => 'Gagal upload gambar'], 400);
+}
 
     
 

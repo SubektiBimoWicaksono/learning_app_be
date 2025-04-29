@@ -18,25 +18,29 @@ class VideoController extends Controller
 
         return response()->json($videos->get());
     }
+ 
+  public function store(Request $request)
+  {
+      $request->validate([
+          'title' => 'required|string',
+          'url' => 'required|url',
+          'duration' => 'required|string',         'section_id' => 'required|exists:sections,id',
+      ]);
+  
+      $video = Video::create([
+          'title' => $request->title,
+          'url' => $request->url,
+          'section_id' => $section,
+          'duration' => $request->duration,
+      ]);
+  
+      return response()->json([
+          'message' => 'Video berhasil ditambahkan',
+          'data' => $video,
+      ], 201);
+  }
 
-    // POST: Tambah video
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string',
-            'url' => 'required|url',
-            'section_id' => 'required|exists:sections,id',
-            'duration' => 'required|string' // contoh: "10:25" atau format lain
-        ]);
-
-        $video = Video::create($request->only('title', 'url', 'section_id', 'duration'));
-
-        return response()->json([
-            'message' => 'Video berhasil ditambahkan',
-            'data' => $video
-        ], 201);
-    }
-
+  
     // GET: Ambil detail video
     public function show($id)
     {

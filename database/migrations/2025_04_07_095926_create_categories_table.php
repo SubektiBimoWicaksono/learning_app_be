@@ -18,6 +18,17 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
+             // Add dummy categories after table creation
+             DB::table('categories')->insert([
+                ['name' => 'Akutansi Keuangan'],
+                ['name' => 'Audit dan Assurance'],
+                ['name' => 'Perpajakan'],
+                ['name' => 'Akutansi Sektor Publik'],
+                ['name' => 'Etika Hukum dan Profesi'],
+                ['name' => 'Keuangan dan Analisis'],
+                ['name' => 'Sistem Informasi Akutansi'],
+                ['name' => 'Akutansi Manajerial/ Biaya'],
+            ]);
         
     }
 

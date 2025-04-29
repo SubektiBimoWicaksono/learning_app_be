@@ -23,6 +23,6 @@ class Section extends Model
 
     public function quiz()
     {
-        return $this->hasOne(Quiz::class);
+        return $this->hasMany(Quiz::class);
     }
 }

@@ -26,6 +26,10 @@ use App\Http\Controllers\Auth\AuthenticationController;
 |
 */
 
+Route::options('/{any}', function (Request $request) {
+    return response()->json([], 204);
+})->where('any', '.*');
+Route::get('/categories', [CategoryController::class, 'index']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -43,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthenticationController::class, 'logout']);
 
     //Routes CRUD Tabel Category
-    Route::get('/categories', [CategoryController::class, 'index']);
+    // Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);
@@ -55,9 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/courses/{id}', [CourseController::class, 'show']);
     Route::put('/courses/{id}', [CourseController::class, 'update']);
     Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
+    Route::post('/courses/{id}/upload-image', [CourseController::class, 'uploadImage']);
     Route::get('/courses/{id}/reviews', [ReviewController::class, 'filterByCourse']);
     Route::get('/categories/{id}/courses', [CourseController::class, 'filterByCategory']);
-    Route::get('/categories/{id}/users', [CourseController::class, 'filterByUser']);
+    Route::get('/courses/mentor/{id}', [CourseController::class, 'filterByUser']);
    
 
 
@@ -69,7 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::get('/sections', [SectionController::class, 'index']);
-    Route::post('/sections', [SectionController::class, 'store']);
+    Route::post('/courses/{course}/sections', [SectionController::class, 'store']);
     Route::get('/sections/{id}', [SectionController::class, 'show']);
     Route::put('/sections/{id}', [SectionController::class, 'update']);
     Route::delete('/sections/{id}', [SectionController::class, 'destroy']);
@@ -93,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/quiz-answers/{id}', [QuizAnswerController::class, 'destroy']);
 
     Route::get('/videos', [VideoController::class, 'index']);
+
     Route::post('/videos', [VideoController::class, 'store']);
     Route::get('/videos/{id}', [VideoController::class, 'show']);
     Route::put('/videos/{id}', [VideoController::class, 'update']);
