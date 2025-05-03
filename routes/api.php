@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatRoomController;
 use App\Http\Controllers\CourseAccessController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuizController;
@@ -37,7 +39,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //fitur search course 
 Route::get('/courses/search', [CourseController::class, 'search']);
-
+Route::get('/courses/mentor/{id}', [CourseController::class, 'filterByUser']);
+Route::get('/videos', [VideoController::class, 'index']);  
 
 //Routes Login Register 3 Role
 Route::post('/register', [AuthenticationController::class, 'register']);
@@ -62,8 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courses/{id}/upload-image', [CourseController::class, 'uploadImage']);
     Route::get('/courses/{id}/reviews', [ReviewController::class, 'filterByCourse']);
     Route::get('/categories/{id}/courses', [CourseController::class, 'filterByCategory']);
-    Route::get('/courses/mentor/{id}', [CourseController::class, 'filterByUser']);
-   
+ 
 
 
     Route::get('/course-accesses', [CourseAccessController::class, 'index']);
@@ -97,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/quiz-answers/{id}', [QuizAnswerController::class, 'update']);
     Route::delete('/quiz-answers/{id}', [QuizAnswerController::class, 'destroy']);
 
-    Route::get('/videos', [VideoController::class, 'index']);
+   
 
     Route::post('/videos', [VideoController::class, 'store']);
     Route::get('/videos/{id}', [VideoController::class, 'show']);
@@ -115,7 +117,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 
-
+    Route::post('/chat-rooms', [ChatRoomController::class, 'createRoom']);
+    Route::get('/chat-rooms', [ChatRoomController::class, 'myRooms']);
+    Route::post('/chats', [ChatController::class, 'store']);
+    Route::get('/chats/{chatRoomId}', [ChatController::class, 'index']);
     // tambah route lain yang butuh login di sini
     // contoh: Route::get('/profile', fn (Request $request) => $request->user());
 });
