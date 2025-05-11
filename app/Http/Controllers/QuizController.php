@@ -18,7 +18,47 @@ class QuizController extends Controller
 
         return response()->json($quizzes->get());
     }
+    public function storeQuestionWithAnswers(Request $request, $quizId)
+    {
+        $request->validate([
+            'question' => 'required|string',
+            'answers' => 'required|array',
+            'answers.*.answer' => 'required|string',
+            'answers.*.status' => 'required|boolean',
+        ]);
+    
+        // Pastikan quiz ada
+        $quiz = Quiz::findOrFail($quizId);
+    
+        // Simpan pertanyaan
+        $quizQuestion = $quiz->questions()->create([
+            'question' => $request->question,
+        ]);
+    
+        // Simpan jawaban
+        foreach ($request->answers as $answer) {
+            $quizQuestion->answers()->create($answer);
+        }
+    
+        return response()->json([
+            'message' => 'Quiz question dan answers berhasil disimpan',
+            'data' => [
+                'question' => $quizQuestion,
+                'answers' => $quizQuestion->answers,
+            ],
+        ], 201);
+    }
 
+
+public function showQuizWithDetails($id)
+{
+    $quiz = Quiz::with(['questions.answers'])->findOrFail($id);
+
+    return response()->json([
+        'message' => 'Detail quiz dengan questions dan answers',
+        'data' => $quiz,
+    ]);
+}
     // POST: Buat quiz baru
     public function store(Request $request)
     {

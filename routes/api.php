@@ -14,6 +14,7 @@ use App\Http\Controllers\QuizAnswerController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoAccessController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticationController;
 
 
@@ -32,6 +33,8 @@ Route::options('/{any}', function (Request $request) {
     return response()->json([], 204);
 })->where('any', '.*');
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/mentors', [UserController::class, 'fetchMentors']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -87,11 +90,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/quizzes/{id}', [QuizController::class, 'update']);
     Route::delete('/quizzes/{id}', [QuizController::class, 'destroy']);
 
+    Route::post('/quizzes/{quizId}/questions', [QuizController::class, 'storeQuestionWithAnswers']);
     Route::get('/quiz-questions', [QuizQuestionController::class, 'index']);
     Route::post('/quiz-questions', [QuizQuestionController::class, 'store']);
     Route::get('/quiz-questions/{id}', [QuizQuestionController::class, 'show']);
     Route::put('/quiz-questions/{id}', [QuizQuestionController::class, 'update']);
     Route::delete('/quiz-questions/{id}', [QuizQuestionController::class, 'destroy']);
+
+    Route::get('/quizzes/{id}/details', [QuizController::class, 'showQuizWithDetails']);
 
     Route::get('/quiz-answers', [QuizAnswerController::class, 'index']);
     Route::post('/quiz-answers', [QuizAnswerController::class, 'store']);
