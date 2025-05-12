@@ -52,7 +52,7 @@ class QuizController extends Controller
 
 public function showQuizWithDetails($id)
 {
-    $quiz = Quiz::with(['questions.answers'])->findOrFail($id);
+    $quiz = Quiz::with(['section','questions.answers'])->findOrFail($id);
 
     return response()->json([
         'message' => 'Detail quiz dengan questions dan answers',
@@ -84,6 +84,69 @@ public function showQuizWithDetails($id)
         ], 201);
     }
 
+    public function getOrCreateQuiz(Request $request)
+    {
+        $request->validate([
+            'section_id' => 'required|exists:sections,id',
+        ]);
+
+        // Cek apakah quiz sudah ada berdasarkan section_id
+        $quiz = Quiz::where('section_id', $request->section_id)->first();
+
+        if ($quiz) {
+            // Jika quiz sudah ada, kembalikan data quiz
+            return response()->json([
+                'message' => 'Quiz sudah ada',
+                'data' => $quiz,
+            ], 200);
+        }
+
+        // Jika quiz belum ada, buat quiz baru
+        $quiz = Quiz::create([
+            'section_id' => $request->section_id,
+        ]);
+
+        return response()->json([
+            'message' => 'Quiz berhasil dibuat',
+            'data' => $quiz,
+        ], 201);
+    }
+
+    
+public function editQuestionWithAnswers(Request $request, $quizId, $questionId)
+{
+    $request->validate([
+        'question' => 'required|string',
+        'answers' => 'required|array|min:2',
+        'answers.*.id' => 'nullable|exists:quiz_answers,id',
+        'answers.*.answer' => 'required|string',
+        'answers.*.status' => 'required|boolean',
+    ]);
+
+    $question = QuizQuestion::where('quiz_id', $quizId)->findOrFail($questionId);
+
+    $question->update([
+        'question' => $request->question,
+    ]);
+
+    // Update or create answers
+    foreach ($request->answers as $answer) {
+        if (isset($answer['id'])) {
+            QuizAnswer::where('id', $answer['id'])->update([
+                'answer' => $answer['answer'],
+                'status' => $answer['status'],
+            ]);
+        } else {
+            $question->answers()->create($answer);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Pertanyaan berhasil diperbarui',
+        'data' => $question->load('answers'),
+    ], 200);
+}
+
     // GET: Detail quiz
     public function show($id)
     {
@@ -114,6 +177,7 @@ public function showQuizWithDetails($id)
     public function destroy($id)
     {
         $quiz = Quiz::findOrFail($id);
+        
         $quiz->delete();
 
         return response()->json(['message' => 'Quiz berhasil dihapus']);

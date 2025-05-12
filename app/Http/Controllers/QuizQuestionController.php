@@ -72,6 +72,7 @@ class QuizQuestionController extends Controller
     public function destroy($id)
     {
         $question = QuizQuestion::findOrFail($id);
+        $question->answers()->delete();
         $question->delete();
 
         return response()->json(['message' => 'Pertanyaan berhasil dihapus']);

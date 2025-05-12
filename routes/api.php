@@ -89,14 +89,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/quizzes/{id}', [QuizController::class, 'show']);
     Route::put('/quizzes/{id}', [QuizController::class, 'update']);
     Route::delete('/quizzes/{id}', [QuizController::class, 'destroy']);
-
+    Route::post('/quizzes/get-or-create', [QuizController::class, 'getOrCreateQuiz']);
     Route::post('/quizzes/{quizId}/questions', [QuizController::class, 'storeQuestionWithAnswers']);
     Route::get('/quiz-questions', [QuizQuestionController::class, 'index']);
     Route::post('/quiz-questions', [QuizQuestionController::class, 'store']);
     Route::get('/quiz-questions/{id}', [QuizQuestionController::class, 'show']);
     Route::put('/quiz-questions/{id}', [QuizQuestionController::class, 'update']);
     Route::delete('/quiz-questions/{id}', [QuizQuestionController::class, 'destroy']);
-
+    Route::put('/quizzes/{quizId}/questions/{questionId}', [QuizController::class, 'editQuestionWithAnswers']);
     Route::get('/quizzes/{id}/details', [QuizController::class, 'showQuizWithDetails']);
 
     Route::get('/quiz-answers', [QuizAnswerController::class, 'index']);
