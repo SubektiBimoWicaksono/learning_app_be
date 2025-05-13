@@ -78,4 +78,36 @@ class UserController extends Controller
             'data' => $users
         ]);
     }
+
+    public function show(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name' => 'string|max:255|nullable',
+            'dob' => 'date|nullable',
+            'email' => 'email|max:255|nullable|unique:users,email,' . $user->id,
+            'no_telp' => 'string|max:20|nullable',
+            'gender' => 'in:male,female,other|nullable',
+        ]);
+
+        if ($request->has('name')) $user->name = $request->name;
+        if ($request->has('dob')) $user->dob = $request->dob;
+        if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('no_telp')) $user->no_telp = $request->no_telp;
+        if ($request->has('gender')) $user->gender = $request->gender;
+
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data' => $user,
+        ]);
+    }
 }
