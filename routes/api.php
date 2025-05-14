@@ -11,6 +11,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizQuestionController;
 use App\Http\Controllers\QuizAnswerController;
+use App\Http\Controllers\QuizResultController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoAccessController;
 use App\Http\Controllers\ReviewController;
@@ -104,13 +105,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/quiz-questions/{id}', [QuizQuestionController::class, 'destroy']);
     Route::put('/quizzes/{quizId}/questions/{questionId}', [QuizController::class, 'editQuestionWithAnswers']);
     Route::get('/quizzes/{id}/details', [QuizController::class, 'showQuizWithDetails']);
-
+    Route::post('/quiz-results', [QuizResultController::class, 'store']);
+    Route::get('/quiz-results', [QuizResultController::class, 'index']);
+    Route::get('/quiz-results/{quizId}', [QuizResultController::class, 'showByQuiz']);
     Route::get('/quiz-answers', [QuizAnswerController::class, 'index']);
     Route::post('/quiz-answers', [QuizAnswerController::class, 'store']);
     Route::get('/quiz-answers/{id}', [QuizAnswerController::class, 'show']);
     Route::put('/quiz-answers/{id}', [QuizAnswerController::class, 'update']);
     Route::delete('/quiz-answers/{id}', [QuizAnswerController::class, 'destroy']);
-
+    Route::get('/quiz-id/{sectionId}', [QuizController::class, 'getQuizIdBySectionId']);
    
 
     Route::post('/videos', [VideoController::class, 'store']);
@@ -133,6 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat-rooms', [ChatRoomController::class, 'myRooms']);
     Route::post('/chats', [ChatController::class, 'store']);
     Route::get('/chats/{chatRoomId}', [ChatController::class, 'index']);
+    
     // tambah route lain yang butuh login di sini
     // contoh: Route::get('/profile', fn (Request $request) => $request->user());
 });

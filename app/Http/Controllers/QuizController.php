@@ -18,6 +18,16 @@ class QuizController extends Controller
 
         return response()->json($quizzes->get());
     }
+    public function getQuizIdBySectionId($sectionId)
+{
+    $quiz = Quiz::where('section_id', $sectionId)->first();
+
+    if (!$quiz) {
+        return response()->json(['message' => 'Quiz not found'], 404);
+    }
+
+    return response()->json(['quiz_id' => $quiz->id], 200);
+}
     public function storeQuestionWithAnswers(Request $request, $quizId)
     {
         $request->validate([
