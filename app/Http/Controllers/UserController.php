@@ -21,7 +21,68 @@ class UserController extends Controller
             'data' => $mentors
         ]);
     }
+    public function show(Request $request)
+    {
+        return response()->json($request->user());
+    }
 
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name' => 'string|max:255|nullable',
+            'dob' => 'date|nullable',
+            'email' => 'email|max:255|nullable|unique:users,email,' . $user->id,
+            'no_telp' => 'string|max:20|nullable',
+            'gender' => 'in:male,female,other|nullable',
+        ]);
+
+        if ($request->has('name')) $user->name = $request->name;
+        if ($request->has('dob')) $user->dob = $request->dob;
+        if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('no_telp')) $user->no_telp = $request->no_telp;
+        if ($request->has('gender')) $user->gender = $request->gender;
+
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data' => $user,
+        ]);
+    }
+
+    public function uploadImage(Request $request, $id)
+    {
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User tidak ditemukan'], 404);
+        }
+    
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif', // maksimal 2MB
+        ]);
+    
+        if ($request->hasFile('photo')) {
+            $image = $request->file('photo');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/profile'), $imageName);
+    
+            // update course image path
+            $user->update([
+                'photo' => 'uploads/profile/' . $imageName
+            ]);
+    
+            return response()->json([
+                'message' => 'Gambar berhasil diupload dan cuserdiperbarui',
+                'data' => $user
+            ]);
+        }
+    
+        return response()->json(['message' => 'Gagal upload gambar'], 400);
+    }
     /**
      * Fetch all student users
      */
