@@ -54,7 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/profile', [UserController::class, 'show']);
     Route::put('/edit/profile', [UserController::class, 'update']);
+
     Route::post('/upload-image/{id}', [UserController::class, 'uploadImage']);
+
 
     //Routes CRUD Tabel Category
     // Route::get('/categories', [CategoryController::class, 'index']);
