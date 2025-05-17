@@ -17,7 +17,7 @@ use App\Http\Controllers\VideoAccessController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticationController;
-
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +30,8 @@ use App\Http\Controllers\Auth\AuthenticationController;
 |
 */
 
+
+Route::get('/search', [SearchController::class, 'search']);
 Route::options('/{any}', function (Request $request) {
     return response()->json([], 204);
 })->where('any', '.*');
