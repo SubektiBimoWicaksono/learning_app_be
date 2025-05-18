@@ -78,11 +78,16 @@ Route::middleware('auth:sanctum')->group(function () {
  
 
 
-    Route::get('/course-accesses', [CourseAccessController::class, 'index']);
+    // Route::get('/course-accesses', [CourseAccessController::class, 'index']);
     Route::post('/course-accesses', [CourseAccessController::class, 'store']);
     Route::get('/course-accesses/{id}', [CourseAccessController::class, 'show']);
     Route::put('/course-accesses/{id}', [CourseAccessController::class, 'update']);
     Route::delete('/course-accesses/{id}', [CourseAccessController::class, 'destroy']);
+    Route::get('/course-access', [CourseAccessController::class, 'index']);
+    Route::get('/course-access/enrolled/check-enrollment', [CourseAccessController::class, 'isEnrolled']);
+    // Route::post('/course-access/enroll', [CourseAccessController::class, 'enroll']);
+    // Route::put('/course-access/{id}/status', [CourseAccessController::class, 'updateStatus']);
+    // Route::get('/course-access/{id}', [CourseAccessController::class, 'show']);
 
 
     Route::get('/sections', [SectionController::class, 'index']);
