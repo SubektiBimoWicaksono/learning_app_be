@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // Route::get('/course-accesses', [CourseAccessController::class, 'index']);
+    Route::get('/student-courses/{userId}', [CourseAccessController::class, 'getStudentCourses']);
     Route::post('/course-accesses', [CourseAccessController::class, 'store']);
     Route::get('/course-accesses/{id}', [CourseAccessController::class, 'show']);
     Route::put('/course-accesses/{id}', [CourseAccessController::class, 'update']);

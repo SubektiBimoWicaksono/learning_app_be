@@ -7,6 +7,29 @@ use Illuminate\Http\Request;
 
 class CourseAccessController extends Controller
 {
+
+
+    public function getStudentCourses($userId)
+    {
+    $accesses = \App\Models\CourseAccess::with('course', 'course.user','course.category')
+        ->where('user_id', $userId)
+        ->get();
+
+    $ongoing = $accesses->where('access_status', 'ongoing')
+        ->pluck('course')
+        ->filter()
+        ->values();
+
+    $completed = $accesses->where('access_status', 'completed')
+        ->pluck('course')
+        ->filter()
+        ->values();
+
+    return response()->json([
+        'ongoing' => $ongoing,
+        'completed' => $completed,
+    ]);
+}
     // Menampilkan semua data akses course
     public function index()
     {
