@@ -18,6 +18,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\VideoProgressController;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,6 +145,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat-rooms', [ChatRoomController::class, 'myRooms']);
     Route::post('/chats', [ChatController::class, 'store']);
     Route::get('/chats/{chatRoomId}', [ChatController::class, 'index']);
+
+    Route::post('/video-progress/watch', [VideoProgressController::class, 'markVideoAsWatched']);
     
     // tambah route lain yang butuh login di sini
     // contoh: Route::get('/profile', fn (Request $request) => $request->user());
