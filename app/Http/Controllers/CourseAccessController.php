@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseAccess;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 
 class CourseAccessController extends Controller
@@ -11,6 +12,7 @@ class CourseAccessController extends Controller
 
     public function getStudentCourses($userId)
     {
+        
     $accesses = \App\Models\CourseAccess::with('course', 'course.user','course.category')
         ->where('user_id', $userId)
         ->get();
@@ -104,5 +106,40 @@ class CourseAccessController extends Controller
             ->exists();
 
         return response()->json(['enrolled' => $isEnrolled]);
+    }
+
+    public function generateCertificate($id)
+    {
+        $access = CourseAccess::with('course', 'user')->findOrFail($id);
+
+        if ($access->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($access->access_status !== 'completed') {
+            return response()->json(['message' => 'Course belum diselesaikan'], 400);
+        }
+
+        // Cek apakah sertifikat sudah pernah dibuat
+        $existing = Certificate::where('course_access_id', $access->id)->first();
+        if ($existing) {
+            return response()->json([
+                'message' => 'Sertifikat sudah pernah dibuat',
+                'certificate' => $existing
+            ]);
+        }
+
+        $certificate = Certificate::create([
+            'user_id' => $access->user_id,
+            'course_id' => $access->course_id,
+            'course_access_id' => $access->id,
+            'certificate_id' => 'CERT-' . strtoupper(uniqid()),
+            'completed_at' => $access->updated_at,
+        ]);
+
+        return response()->json([
+            'message' => 'Sertifikat berhasil digenerate',
+            'certificate' => $certificate
+        ]);
     }
 }
