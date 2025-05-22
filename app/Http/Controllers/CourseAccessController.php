@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseAccess;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 
 class CourseAccessController extends Controller
@@ -11,6 +12,7 @@ class CourseAccessController extends Controller
 
     public function getStudentCourses($userId)
     {
+        
     $accesses = \App\Models\CourseAccess::with('course', 'course.user','course.category')
         ->where('user_id', $userId)
         ->get();
@@ -106,86 +108,38 @@ class CourseAccessController extends Controller
         return response()->json(['enrolled' => $isEnrolled]);
     }
 
+    public function generateCertificate($id)
+    {
+        $access = CourseAccess::with('course', 'user')->findOrFail($id);
 
-    //     // Menampilkan semua course yang diakses oleh user (bisa difilter by status)
-    // public function index(Request $request)
-    // {
-    //     $userId = Auth::id();
-    //     $status = $request->query('status'); // optional filter: ongoing / completed
+        if ($access->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    //     $query = CourseAccess::with('course')
-    //         ->where('user_id', $userId);
+        if ($access->access_status !== 'completed') {
+            return response()->json(['message' => 'Course belum diselesaikan'], 400);
+        }
 
-    //     if ($status) {
-    //         $query->where('access_status', $status);
-    //     }
+        // Cek apakah sertifikat sudah pernah dibuat
+        $existing = Certificate::where('course_access_id', $access->id)->first();
+        if ($existing) {
+            return response()->json([
+                'message' => 'Sertifikat sudah pernah dibuat',
+                'certificate' => $existing
+            ]);
+        }
 
-    //     return response()->json($query->get());
-    // }
+        $certificate = Certificate::create([
+            'user_id' => $access->user_id,
+            'course_id' => $access->course_id,
+            'course_access_id' => $access->id,
+            'certificate_id' => 'CERT-' . strtoupper(uniqid()),
+            'completed_at' => $access->updated_at,
+        ]);
 
-    // // Enroll ke course (jika belum pernah)
-    // public function enroll(Request $request)
-    // {
-    //     $request->validate([
-    //         'course_id' => 'required|exists:courses,id',
-    //     ]);
-
-    //     $userId = Auth::id();
-    //     $courseId = $request->course_id;
-
-    //     $existing = CourseAccess::where('user_id', $userId)
-    //         ->where('course_id', $courseId)
-    //         ->first();
-
-    //     if ($existing) {
-    //         return response()->json([
-    //             'message' => 'User already enrolled in this course.',
-    //             'data' => $existing
-    //         ], 200);
-    //     }
-
-    //     $access = CourseAccess::create([
-    //         'user_id' => $userId,
-    //         'course_id' => $courseId,
-    //         'access_status' => 'ongoing',
-    //     ]);
-
-    //     return response()->json([
-    //         'message' => 'Enrollment successful',
-    //         'data' => $access
-    //     ], 201);
-    // }
-
-    // // Update status course access (e.g. to 'completed')
-    // public function updateStatus(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'access_status' => 'required|in:ongoing,completed',
-    //     ]);
-
-    //     $access = CourseAccess::findOrFail($id);
-
-    //     if ($access->user_id !== Auth::id()) {
-    //         return response()->json(['message' => 'Unauthorized'], 403);
-    //     }
-
-    //     $access->access_status = $request->access_status;
-    //     $access->save();
-
-    //     return response()->json([
-    //         'message' => 'Course status updated.',
-    //         'data' => $access
-    //     ]);
-    // }
-
-    // // Menampilkan detail akses course tertentu
-    // public function show($id)
-    // {
-    //     $access = CourseAccess::with(['course'])
-    //         ->where('id', $id)
-    //         ->where('user_id', Auth::id())
-    //         ->firstOrFail();
-
-    //     return response()->json($access);
-    // }
+        return response()->json([
+            'message' => 'Sertifikat berhasil digenerate',
+            'certificate' => $certificate
+        ]);
+    }
 }

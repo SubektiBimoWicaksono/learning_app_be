@@ -15,46 +15,46 @@ class CourseController extends Controller
 
     // Tambah course baru
     public function store(Request $request)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    // Cek apakah role-nya mentor
-    if ($user->role !== 'mentor') {
-        return response()->json(['message' => 'Hanya user dengan role mentor yang bisa membuat category'], 403);
+        // Cek apakah role-nya mentor
+        if ($user->role !== 'mentor') {
+            return response()->json(['message' => 'Hanya user dengan role mentor yang bisa membuat category'], 403);
+        }
+
+        // Validasi data kecuali user_id
+        $request->validate([
+            'name'              => 'required|string|max:255',
+            'desc'              => 'nullable|string',
+            'media_full_access' => 'nullable|boolean',
+            'level'             => 'nullable|string',
+            'audio_book'        => 'nullable|boolean',
+            'lifetime_access'   => 'nullable|boolean',
+            'certificate'       => 'nullable|boolean',
+            'price'             => 'nullable|string',
+            'category_id'       => 'nullable|exists:categories,id'
+        ]);
+
+        // Tambah course dengan user_id dari session login
+        $course = Course::create([
+            'name'              => $request->name,
+            'desc'              => $request->desc,
+            'user_id'           => $user->id,
+            'media_full_access' => $request->media_full_access,
+            'level'             => $request->level,
+            'audio_book'        => $request->audio_book,
+            'lifetime_access'   => $request->lifetime_access,
+            'certificate'       => $request->certificate,
+            'price'             => $request->price,
+            'category_id'       => $request->category_id,
+        ]);
+
+        return response()->json([
+            'message' => 'Course berhasil dibuat oleh mentor',
+            'data' => $course
+        ], 201);
     }
-
-    // Validasi data kecuali user_id
-    $request->validate([
-        'name'              => 'required|string|max:255',
-        'desc'              => 'nullable|string',
-        'media_full_access' => 'nullable|boolean',
-        'level'             => 'nullable|string',
-        'audio_book'        => 'nullable|boolean',
-        'lifetime_access'   => 'nullable|boolean',
-        'certificate'       => 'nullable|boolean',
-        'price'             => 'nullable|string',
-        'category_id'       => 'nullable|exists:categories,id'
-    ]);
-
-    // Tambah course dengan user_id dari session login
-    $course = Course::create([
-        'name'              => $request->name,
-        'desc'              => $request->desc,
-        'user_id'           => $user->id,
-        'media_full_access' => $request->media_full_access,
-        'level'             => $request->level,
-        'audio_book'        => $request->audio_book,
-        'lifetime_access'   => $request->lifetime_access,
-        'certificate'       => $request->certificate,
-        'price'             => $request->price,
-        'category_id'       => $request->category_id,
-    ]);
-
-    return response()->json([
-        'message' => 'Course berhasil dibuat oleh mentor',
-        'data' => $course
-    ], 201);
-}
 
 
     // Tampilkan satu course
