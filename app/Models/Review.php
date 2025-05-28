@@ -9,10 +9,14 @@ class Review extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['reviews', 'rating', 'datetime', 'course_id'];
+    protected $fillable = ['reviews', 'rating', 'datetime', 'course_id', 'user_id'];
 
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

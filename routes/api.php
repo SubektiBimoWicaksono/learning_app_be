@@ -137,6 +137,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/video-access/{course_id}', [VideoAccessController::class, 'destroy']);
 
     Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::get('/reviews/course/{courseId}', [ReviewController::class, 'ShowReviewByCourse']);
+    Route::get('reviews/rating/{id}', [ReviewController::class, 'getAverageRating']);
     Route::post('/reviews', [ReviewController::class, 'store']);
     Route::get('/reviews/{id}', [ReviewController::class, 'show']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);

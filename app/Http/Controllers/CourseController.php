@@ -56,6 +56,21 @@ class CourseController extends Controller
         ], 201);
     }
 
+    public function getAverageRating($id)
+    {
+        $course = Course::find($id);
+
+        if (!$course) {
+            return response()->json(['message' => 'Course tidak ditemukan'], 404);
+        }
+
+        // Menggunakan accessor yang sudah dibuat di model
+        return response()->json([
+            'course_id' => $id,
+            'rating' => $course->average_rating, // Hasil dari getAverageRatingAttribute()
+           // Hasil dari getTotalReviewsAttribute()
+        ]);
+    }
 
     // Tampilkan satu course
     public function show($id)

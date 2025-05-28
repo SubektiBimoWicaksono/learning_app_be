@@ -11,35 +11,40 @@ class ReviewController extends Controller
     {
         $reviews = $request->has('course_id')
             ? Review::where('course_id', $request->course_id)->with('course')->get()
-            : Review::with('course')->get();
+            : Review::with('course', 'user')->get();
 
         return response()->json($reviews);
     }
 
-    public function store(Request $request)
+    // show review by course_id
+    public function ShowReviewByCourse($courseId)
     {
-        $request->validate([
-            'reviews' => 'required|string',
-            'rating' => 'required|numeric|min:1|max:5',
-            'course_id' => 'required|exists:courses,id',
-        ]);
-
-        $review = Review::create([
-            'reviews' => $request->reviews,
-            'rating' => $request->rating,
-            'datetime' => now(),
-            'course_id' => $request->course_id,
-        ]);
-
-        return response()->json(['message' => 'Review berhasil ditambahkan', 'data' => $review]);
+        $reviews = Review::where('course_id', $courseId)->with('course', 'user')->get();
+        return response()->json($reviews);
     }
 
-    public function show($id)
-    {
-        $review = Review::findOrFail($id);
-        return response()->json($review);
-    }
 
+public function store(Request $request)
+{
+    $user = auth()->user(); // Mendapatkan user yang login
+
+    $request->validate([
+        'reviews' => 'required|string',
+        'rating' => 'required|numeric|min:1|max:5',
+        'course_id' => 'required|exists:courses,id',
+    ]);
+
+    $review = Review::create([
+        'reviews' => $request->reviews,
+        'rating' => $request->rating,
+        'datetime' => now(),
+        'course_id' => $request->course_id,
+        'user_id' => $user->id, // user_id sudah di-set di sini
+    ]);
+
+    // Saat $review dikonversi ke JSON, user_id seharusnya ikut
+    return response()->json(['message' => 'Review berhasil ditambahkan', 'data' => $review]);
+}
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
